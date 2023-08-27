@@ -71,7 +71,7 @@ const listDom = (data) => {
 };
 
 // main
-const main = () => {
+const main = (t, n) => {
   // 设定一个interval, 每隔一段20分钟执行一次
   setInterval(
     () => {
@@ -79,10 +79,10 @@ const main = () => {
         () => {
           doJob();
         },
-        Math.random() * 1000 * 1,
+        Math.floor(Math.random() * 10) * 1000 * t,
       );
     },
-    1000 * 60 * 1,
+    1000 * 60 * n,
   );
 };
 
