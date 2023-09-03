@@ -4,7 +4,7 @@ const { sendMail } = require('../tools/sendEmail');
 let lastNoticeData = null;
 
 // subscribe 订阅通知
-const doJob = async () => {
+const doJob = async (cb) => {
   const res = await axios.get(
     'https://learn.open.com.cn/StudentCenter/Notice/GetNoticeJson',
     {
@@ -14,12 +14,18 @@ const doJob = async () => {
       },
     },
   );
-  console.log('res.data', res.data);
-  !lastNoticeData && (lastNoticeData = res.data);
+
+  if (!lastNoticeData) {
+    lastNoticeData = res.data;
+    cb && cb(res.data);
+    return res.data;
+  }
+
   if (lastNoticeData.message != res.data.message) {
     lastNoticeData = res.data;
-    sendSms(res.data);
+    cb && cb(res.data);
   }
+  return res.data;
 };
 
 // 发送Emial
@@ -79,13 +85,14 @@ const main = (t, n) => {
         () => {
           doJob();
         },
-        Math.floor(Math.random() * 10) * 1000 * t,
+        Math.floor(Math.random() * 10) * 1000 * n,
       );
     },
-    1000 * 60 * n,
+    1000 * 60 * t,
   );
 };
 
 module.exports = {
   main,
+  doJob,
 };
